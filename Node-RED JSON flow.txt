@@ -1,0 +1,317 @@
+[
+    {
+        "id": "72256184.3bf3e",
+        "type": "tab",
+        "label": "Flow 1",
+        "disabled": false,
+        "info": ""
+    },
+    {
+        "id": "f3444e3.7b0dcb",
+        "type": "ui_tab",
+        "name": "Movie Ticket Booking Bot",
+        "icon": "dashboard",
+        "disabled": false,
+        "hidden": false
+    },
+    {
+        "id": "e96a1470.c473c8",
+        "type": "ui_base",
+        "theme": {
+            "name": "theme-custom",
+            "lightTheme": {
+                "default": "#0094CE",
+                "baseColor": "#000000",
+                "baseFont": "Times New Roman,Times,serif",
+                "edited": true,
+                "reset": false
+            },
+            "darkTheme": {
+                "default": "#097479",
+                "baseColor": "#097479",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+                "edited": true,
+                "reset": false
+            },
+            "customTheme": {
+                "name": "Untitled Theme 1",
+                "default": "#4B7930",
+                "baseColor": "#0f62fe",
+                "baseFont": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif",
+                "reset": false
+            },
+            "themeState": {
+                "base-color": {
+                    "default": "#4B7930",
+                    "value": "#0f62fe",
+                    "edited": true
+                },
+                "page-titlebar-backgroundColor": {
+                    "value": "#000000",
+                    "edited": true
+                },
+                "page-backgroundColor": {
+                    "value": "#a7a7a7",
+                    "edited": true
+                },
+                "page-sidebar-backgroundColor": {
+                    "value": "#000000",
+                    "edited": true
+                },
+                "group-textColor": {
+                    "value": "#5380d5",
+                    "edited": true
+                },
+                "group-borderColor": {
+                    "value": "#000000",
+                    "edited": true
+                },
+                "group-backgroundColor": {
+                    "value": "#000000",
+                    "edited": true
+                },
+                "widget-textColor": {
+                    "value": "#eeeeee",
+                    "edited": false
+                },
+                "widget-backgroundColor": {
+                    "value": "#0f62fe",
+                    "edited": true
+                },
+                "widget-borderColor": {
+                    "value": "#000000",
+                    "edited": true
+                },
+                "base-font": {
+                    "value": "-apple-system,BlinkMacSystemFont,Segoe UI,Roboto,Oxygen-Sans,Ubuntu,Cantarell,Helvetica Neue,sans-serif"
+                }
+            },
+            "angularTheme": {
+                "primary": "indigo",
+                "accents": "blue",
+                "warn": "red",
+                "background": "grey"
+            }
+        },
+        "site": {
+            "name": "Node-RED Dashboard",
+            "hideToolbar": "false",
+            "allowSwipe": "false",
+            "lockMenu": "false",
+            "allowTempTheme": "true",
+            "dateFormat": "DD/MM/YYYY",
+            "sizes": {
+                "sx": 48,
+                "sy": 48,
+                "gx": 6,
+                "gy": 6,
+                "cx": 6,
+                "cy": 6,
+                "px": 0,
+                "py": 0
+            }
+        }
+    },
+    {
+        "id": "678edef6.3d763",
+        "type": "ui_group",
+        "name": "",
+        "tab": "f3444e3.7b0dcb",
+        "order": 1,
+        "disp": true,
+        "width": "12",
+        "collapse": false
+    },
+    {
+        "id": "1425cb8f.4f4354",
+        "type": "ui_form",
+        "z": "72256184.3bf3e",
+        "name": "",
+        "label": "Ask Me Something",
+        "group": "678edef6.3d763",
+        "order": 2,
+        "width": "12",
+        "height": "12",
+        "options": [
+            {
+                "label": "",
+                "value": "input",
+                "type": "text",
+                "required": true,
+                "rows": null
+            }
+        ],
+        "formValue": {
+            "input": ""
+        },
+        "payload": "",
+        "submit": "submit",
+        "cancel": "cancel",
+        "topic": "topic",
+        "topicType": "msg",
+        "splitLayout": "",
+        "x": 110,
+        "y": 240,
+        "wires": [
+            [
+                "ad5e8182.e0159"
+            ]
+        ]
+    },
+    {
+        "id": "ad5e8182.e0159",
+        "type": "function",
+        "z": "72256184.3bf3e",
+        "name": "input parsing",
+        "func": "msg.payload = msg.payload.input;\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 310,
+        "y": 240,
+        "wires": [
+            [
+                "7eb239b6.a01ba8",
+                "b138e2d5.f2612"
+            ]
+        ]
+    },
+    {
+        "id": "ac218362.4d7a1",
+        "type": "function",
+        "z": "72256184.3bf3e",
+        "name": "output parsing",
+        "func": "var outputs = msg.payload.output.generic\nvar default_img = \"https://media-cdn.tripadvisor.com/media/photo-s/0b/a1/e3/af/pvr-cinemas-4.jpg\"\nmsg.payload.text = \"\"\noutputs.forEach(output => {\n    var response = output.response_type\n    if( response == \"text\"){\n        msg.payload.text += output.text\n        if(!msg.payload.url) msg.payload.url = default_img\n    }\n    else if(response == \"option\"){\n        msg.payload.title = output.title\n        var options = []\n        output.options.forEach(opt => {\n            options.push(opt.value.input.text)\n        })\n        msg.payload.options = options\n        if(!msg.payload.url) msg.payload.url = default_img\n    }\n    else if(response == \"image\"){\n        msg.payload.url = output.source\n    }\n})\nreturn msg;",
+        "outputs": 1,
+        "noerr": 0,
+        "initialize": "",
+        "finalize": "",
+        "libs": [],
+        "x": 660,
+        "y": 240,
+        "wires": [
+            [
+                "b93b7277.bb63d",
+                "51b3ae6.a754d5"
+            ]
+        ]
+    },
+    {
+        "id": "7eb239b6.a01ba8",
+        "type": "watson-conversation-v1",
+        "z": "72256184.3bf3e",
+        "name": "",
+        "workspaceid": "602bce7d-e145-4caf-b478-397bb2b8212e",
+        "multiuser": false,
+        "context": true,
+        "empty-payload": false,
+        "service-endpoint": "https://api.us-south.assistant.watson.cloud.ibm.com/instances/c09d98d0-e888-4ca4-8233-c776a37292f2",
+        "timeout": "",
+        "optout-learning": false,
+        "x": 480,
+        "y": 240,
+        "wires": [
+            [
+                "ac218362.4d7a1"
+            ]
+        ]
+    },
+    {
+        "id": "94d8dc59.fb43",
+        "type": "ui_template",
+        "z": "72256184.3bf3e",
+        "group": "678edef6.3d763",
+        "name": "Welcome",
+        "order": 1,
+        "width": "12",
+        "height": "14",
+        "format": "<center><h1>PVR Assistant</h1></center>\n<center><h3><i>Welcome to the world's 7th largest multiplex player by admissions</i></h3></center>\n<img src=\"https://upload.wikimedia.org/wikipedia/commons/d/dc/Pvrcinemas_logo.jpg\">\n<h4><i>We are connected to PVR Multiplex Cinema's Portal. How can we help you?</i></h4>\n",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "x": 100,
+        "y": 360,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b138e2d5.f2612",
+        "type": "ui_template",
+        "z": "72256184.3bf3e",
+        "group": "678edef6.3d763",
+        "name": "user input",
+        "order": 3,
+        "width": "12",
+        "height": "2",
+        "format": "<i>YOUR INPUT</i> <h3>{{msg.payload}}</h3>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "x": 480,
+        "y": 360,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "b93b7277.bb63d",
+        "type": "template",
+        "z": "72256184.3bf3e",
+        "name": "output formatting",
+        "field": "payload",
+        "fieldType": "msg",
+        "format": "handlebars",
+        "syntax": "mustache",
+        "template": "{{payload.text}}\n<br>\n{{payload.title}}\n<br>\n{{#payload.options}}\n<ul>\n<li>{{.}}</li>\n</ul>\n{{/payload.options}}\n<br>\n<img src= {{payload.url}} width=\"600\" height=\"600\">",
+        "output": "str",
+        "x": 870,
+        "y": 240,
+        "wires": [
+            [
+                "4519a42a.8a7e1c"
+            ]
+        ]
+    },
+    {
+        "id": "4519a42a.8a7e1c",
+        "type": "ui_template",
+        "z": "72256184.3bf3e",
+        "group": "678edef6.3d763",
+        "name": "bot response",
+        "order": 4,
+        "width": "12",
+        "height": "15",
+        "format": "<i>RESPONSE</i><br>\n<div ng-bind-html=\"msg.payload\"></div>",
+        "storeOutMessages": true,
+        "fwdInMessages": true,
+        "resendOnRefresh": true,
+        "templateScope": "local",
+        "x": 1070,
+        "y": 240,
+        "wires": [
+            []
+        ]
+    },
+    {
+        "id": "51b3ae6.a754d5",
+        "type": "debug",
+        "z": "72256184.3bf3e",
+        "name": "debug",
+        "active": true,
+        "tosidebar": true,
+        "console": false,
+        "tostatus": false,
+        "complete": "payload",
+        "targetType": "msg",
+        "statusVal": "",
+        "statusType": "auto",
+        "x": 860,
+        "y": 360,
+        "wires": []
+    }
+]
